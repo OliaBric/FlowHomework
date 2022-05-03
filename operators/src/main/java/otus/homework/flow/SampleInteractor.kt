@@ -93,8 +93,6 @@ class SampleInteractor(
             }
         }.catch {
             emit(-1)
-        }
+        }.onCompletion { this@SampleInteractor.sampleRepository.completed() }
     }
-
-    // непонятно, что нужно сделать для dotsRepository.completed()
 }

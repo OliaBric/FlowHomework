@@ -14,8 +14,8 @@ class CatsViewModel(
     private val catsRepository: CatsRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<Result>(Initial)
-    val uiState: StateFlow<Result> = _uiState
+    private val _uiState = MutableStateFlow<Result<Any>>(Initial)
+    val uiState: StateFlow<Result<Any>> = _uiState
 
     init {
         viewModelScope.launch {
@@ -29,15 +29,19 @@ class CatsViewModel(
         }
     }
 
-    sealed class Result {
-        object Initial : Result()
-        class Success(val catData: Fact) : Result()
-        class Error(val message: String) : Result()
+    sealed class Result<out T> {
+//        object Initial : Result()
+//        class Success(val catData: Fact) : Result()
+//        class Error(val message: String) : Result()
+
+        object Initial : Result<Nothing>()
+        data class Success<T>(val catData: Fact) : Result<T>()
+        data class Error(val message: String) : Result<Nothing>()
     }
 }
 
 class CatsViewModelFactory(private val catsRepository: CatsRepository) :
     ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
         CatsViewModel(catsRepository) as T
 }
